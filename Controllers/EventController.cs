@@ -6,7 +6,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ems_backend.Data;
+using ems_backend.Entities;
 using ems_backend.Models;
+using AutoMapper;
+using ems_backend.Repositories;
 
 namespace ems_backend.Controllers
 {
@@ -15,110 +18,89 @@ namespace ems_backend.Controllers
     public class EventController : ControllerBase
     {
         private readonly EMSContext _context;
+        private readonly IMapper _mapper;
+        private readonly IEventRepository _eventRepo;
 
-        public EventController(EMSContext context)
+        public EventController(EMSContext context, IMapper mapper, IEventRepository eventRepo)
         {
             _context = context;
+            _mapper = mapper;
+            _eventRepo = eventRepo;
         }
 
         // GET: api/Events
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Event>>> GetEvents()
+        public ActionResult<IEnumerable<EventResponseModel>> GetEvents()
         {
-          if (_context.Events == null)
-          {
-              return NotFound();
-          }
-            return await _context.Events.ToListAsync();
+            try
+            {
+                var eventList = _eventRepo.GetAll();
+                return Ok(eventList);
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         // GET: api/Events/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Event>> GetEvent(int id)
+        public ActionResult<EventResponseModel> GetEvent(int id)
         {
-          if (_context.Events == null)
-          {
-              return NotFound();
-          }
-            var @event = await _context.Events.FindAsync(id);
-
-            if (@event == null)
-            {
-                return NotFound();
-            }
-
-            return @event;
-        }
-
-        // PUT: api/Events/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutEvent(int id, Event @event)
-        {
-            if (id != @event.EventId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(@event).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                var @event = _eventRepo.GetById(id);
+                return Ok(@event);
             }
-            catch (DbUpdateConcurrencyException)
+            catch(Exception e)
             {
-                if (!EventExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest(e.Message);
             }
-
-            return NoContent();
         }
 
-        // POST: api/Events
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Event>> PostEvent(Event @event)
-        {
-          if (_context.Events == null)
-          {
-              return Problem("Entity set 'EMSContext.Events'  is null.");
-          }
-            _context.Events.Add(@event);
-            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetEvent", new { id = @event.EventId }, @event);
+        [HttpPut("{id}")]
+        public IActionResult PutEvent(int id, EventRequestModel model)
+        {
+            try
+            {
+                _eventRepo.Update(id, model);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost]
+        public ActionResult<EventResponseModel> PostEvent(EventRequestModel model)
+        {
+            try
+            {
+                Dictionary<int, EventResponseModel> response = _eventRepo.Create(model);
+                int eventId = response.Keys.First();
+                return CreatedAtAction("GetEvent", new { id = eventId }, response[eventId]);
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         // DELETE: api/Events/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEvent(int id)
+        public IActionResult DeleteEvent(int id)
         {
-            if (_context.Events == null)
+            try
             {
-                return NotFound();
+                _eventRepo.Delete(id);
+                return Ok();
             }
-            var @event = await _context.Events.FindAsync(id);
-            if (@event == null)
+            catch(Exception e)
             {
-                return NotFound();
+                return BadRequest(e.Message);
             }
-
-            _context.Events.Remove(@event);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool EventExists(int id)
-        {
-            return (_context.Events?.Any(e => e.EventId == id)).GetValueOrDefault();
         }
     }
 }

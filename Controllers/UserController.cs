@@ -6,7 +6,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ems_backend.Data;
+using ems_backend.Entities;
 using ems_backend.Models;
+using AutoMapper;
+using ems_backend.Repositories;
 
 namespace ems_backend.Controllers
 {
@@ -15,110 +18,91 @@ namespace ems_backend.Controllers
     public class UserController : ControllerBase
     {
         private readonly EMSContext _context;
+        private readonly IMapper _mapper;
+        private readonly IUserRepository _userRepo;
 
-        public UserController(EMSContext context)
+        public UserController(EMSContext context, IMapper mapper, IUserRepository userRepo)
         {
             _context = context;
+            _mapper = mapper;
+            _userRepo = userRepo;
         }
 
         // GET: api/User
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public ActionResult<IEnumerable<UserResponseModel>> GetUsers()
         {
-          if (_context.Users == null)
-          {
-              return NotFound();
-          }
-            return await _context.Users.ToListAsync();
+            try
+            {
+                var userList = _userRepo.GetAll();
+                return Ok(userList);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         // GET: api/User/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public ActionResult<UserResponseModel> GetUser(int id)
         {
-          if (_context.Users == null)
-          {
-              return NotFound();
-          }
-            var user = await _context.Users.FindAsync(id);
-
-            if (user == null)
+            try
             {
-                return NotFound();
+                var user = _userRepo.GetById(id);
+                return Ok(user);
             }
-
-            return user;
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         // PUT: api/User/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        public IActionResult PutUser(int id, UserRequestModel model)
         {
-            if (id != user.UserId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(user).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                _userRepo.Update(id, model);
+                return Ok();
             }
-            catch (DbUpdateConcurrencyException)
+            catch(Exception e)
             {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest(e.Message);
             }
-
-            return NoContent();
         }
 
         // POST: api/User
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public ActionResult<UserResponseModel> PostUser(UserRequestModel model)
         {
-          if (_context.Users == null)
-          {
-              return Problem("Entity set 'EMSContext.Users'  is null.");
-          }
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetUser", new { id = user.UserId }, user);
+            try
+            {
+                Dictionary<int, UserResponseModel> response = _userRepo.Create(model);
+                int userId = response.Keys.First();
+                return CreatedAtAction("GetUser", new { id = userId }, response);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         // DELETE: api/User/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        public IActionResult DeleteUser(int id)
         {
-            if (_context.Users == null)
+            try
             {
-                return NotFound();
+                _userRepo.Delete(id);
+                return Ok();
             }
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            catch(Exception e)
             {
-                return NotFound();
+                return BadRequest(e.Message);
             }
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
 
-        private bool UserExists(int id)
-        {
-            return (_context.Users?.Any(e => e.UserId == id)).GetValueOrDefault();
-        }
     }
 }

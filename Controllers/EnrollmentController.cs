@@ -6,7 +6,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ems_backend.Data;
+using ems_backend.Entities;
 using ems_backend.Models;
+using AutoMapper;
+using System.Text.Json;
+using ems_backend.Repositories;
 
 namespace ems_backend.Controllers
 {
@@ -15,105 +19,72 @@ namespace ems_backend.Controllers
     public class EnrollmentController : ControllerBase
     {
         private readonly EMSContext _context;
+        private readonly IMapper _mapper;
+        private readonly IEnrollmentRepository _enrollmentRepo;
 
-        public EnrollmentController(EMSContext context)
+        public EnrollmentController(EMSContext context, IMapper mapper, IEnrollmentRepository enrollmentRepo)
         {
             _context = context;
+            _mapper = mapper;
+            _enrollmentRepo = enrollmentRepo;
         }
 
-        // GET: api/Enrollment
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Enrollment>>> GetEnrollments()
+        public ActionResult<IEnumerable<EnrollmentResponseModel>> GetEnrollments()
         {
-          if (_context.Enrollments == null)
-          {
-              return NotFound();
-          }
-            return await _context.Enrollments.ToListAsync();
-        }
-
-        // GET: api/Enrollment/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Enrollment>> GetEnrollment(int id)
-        {
-          if (_context.Enrollments == null)
-          {
-              return NotFound();
-          }
-            var enrollment = await _context.Enrollments.FindAsync(id);
-
-            if (enrollment == null)
-            {
-                return NotFound();
-            }
-
-            return enrollment;
-        }
-
-        // PUT: api/Enrollment/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutEnrollment(int id, Enrollment enrollment)
-        {
-            if (id != enrollment.EnrollmentId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(enrollment).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                var enrollmentList = _enrollmentRepo.GetAll();
+                return Ok(enrollmentList);
             }
-            catch (DbUpdateConcurrencyException)
+            catch(Exception e)
             {
-                if (!EnrollmentExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest(e.Message);
             }
-
-            return NoContent();
+            
         }
 
-        // POST: api/Enrollment
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpGet("{id}")]
+        public ActionResult<EnrollmentResponseModel> GetEnrollment(int id)
+        {
+            try
+            {
+                var enrollment = _enrollmentRepo.GetById(id);
+                return Ok(enrollment);
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
         [HttpPost]
-        public async Task<ActionResult<Enrollment>> PostEnrollment(Enrollment enrollment)
+        public ActionResult<EnrollmentResponseModel> PostEnrollment(EnrollmentRequestModel model)
         {
-          if (_context.Enrollments == null)
-          {
-              return Problem("Entity set 'EMSContext.Enrollments'  is null.");
-          }
-            _context.Enrollments.Add(enrollment);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetEnrollment", new { id = enrollment.EnrollmentId }, enrollment);
+            try
+            {
+                Dictionary<int, EnrollmentResponseModel> response = _enrollmentRepo.Create(model);
+                int enrollmentId = response.Keys.First();
+                return CreatedAtAction("GetEnrollment", new { id = enrollmentId }, response[enrollmentId]);
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
-        // DELETE: api/Enrollment/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEnrollment(int id)
+        public IActionResult DeleteEnrollment(int id)
         {
-            if (_context.Enrollments == null)
+            try
             {
-                return NotFound();
+                _enrollmentRepo.Delete(id);
+                return Ok();
             }
-            var enrollment = await _context.Enrollments.FindAsync(id);
-            if (enrollment == null)
+            catch(Exception e)
             {
-                return NotFound();
+                return BadRequest(e.Message);
             }
-
-            _context.Enrollments.Remove(enrollment);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
 
         private bool EnrollmentExists(int id)

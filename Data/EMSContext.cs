@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ems_backend.Models;
+using ems_backend.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
