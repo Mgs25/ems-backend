@@ -60,12 +60,12 @@ namespace ems_backend.Controllers
 
 
         [HttpPut("{id}")]
-        public IActionResult PutEvent(int id, EventRequestModel model)
+        public ActionResult<EventRequestModel> PutEvent(int id, EventRequestModel model)
         {
             try
             {
                 _eventRepo.Update(id, model);
-                return Ok();
+                return Ok(model);
             }
             catch (Exception e)
             {
