@@ -5,8 +5,23 @@ using ems_backend.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
+var policyName = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: policyName,
+                      builder =>
+                      {
+                          builder
+                            .WithOrigins("http://localhost:3000")
+                            //.AllowAnyOrigin()
+                            .WithMethods("GET")
+                            .AllowAnyHeader();
+                      }
+    );
+});
 
 builder.Services.AddControllers().AddJsonOptions(x =>
 {

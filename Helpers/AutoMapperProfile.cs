@@ -4,57 +4,33 @@ using ems_backend.Models;
 
 #pragma warning disable
 
-public class UserProfile: Profile
+public class UserProfile : Profile
 {
     public UserProfile()
     {
-        // Enrollment Request => Enrollment
-        CreateMap<EnrollmentRequestModel, Enrollment>()
-        .ForMember(dest => dest.Event, act => act.MapFrom(src => (Event)null))
-        .ForMember(dest => dest.User, act => act.MapFrom(src => (User)null));
+        // Enrollment Request <=> Enrollment
+        CreateMap<EnrollmentRequestModel, Enrollment>().ReverseMap();
+        // Enrollment Response <=> Enrollment
+        CreateMap<EnrollmentResponseModel, Enrollment>().ReverseMap();
 
-        // Enrollment => Enrollment Request
-        CreateMap<Enrollment, EnrollmentRequestModel>();
-
-        // Enrollment Response => Enrollment
-        CreateMap<EnrollmentResponseModel, Enrollment>()
-        .ForMember(dest => dest.Event, act => act.MapFrom(src => (Event)null))
-        .ForMember(dest => dest.User, act => act.MapFrom(src => (User)null));
-
-        // Enrollment => Enrollment Response
-        CreateMap<Enrollment, EnrollmentResponseModel>();
-
-
-
-        // Event Request => Event
+        // Event Request <=> Event
         CreateMap<EventRequestModel, Event>().ReverseMap();
-
-        // Event => Event Request
-        // CreateMap<Event, EventRequestModel>();
-
         // Event Response => Event
         CreateMap<EventResponseModel, Event>().ReverseMap();
 
-        // Event => Event Response
-        // CreateMap<Event, EventResponseModel>();
-
-
-        // User Request => User
+        // User Request <=> User
         CreateMap<UserRequestModel, User>().ReverseMap();
-
-        // User => User Request
-        // CreateMap<User, UserRequestModel>();
-
         // User Response <=> User
         CreateMap<UserResponseModel, User>().ReverseMap();
 
-        // User => User Response
-        // CreateMap<User, UserResponseModel>();
-
+        // Category <=> Category Request
         CreateMap<Category, CategoryRequestModel>().ReverseMap();
+        // Category <=> Category Response
         CreateMap<Category, CategoryResponseModel>().ReverseMap();
 
+        // WishList <=> WishList Request
         CreateMap<WishList, WishListRequestModel>().ReverseMap();
+        // WishList <=> WishList Reponse
         CreateMap<WishList, WishListResponseModel>().ReverseMap();
     }
 }
