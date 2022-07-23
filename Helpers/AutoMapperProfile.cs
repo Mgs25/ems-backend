@@ -32,5 +32,10 @@ public class UserProfile : Profile
         CreateMap<WishList, WishListRequestModel>().ReverseMap();
         // WishList <=> WishList Reponse
         CreateMap<WishList, WishListResponseModel>().ReverseMap();
+
+        // User <= Register Reques
+        CreateMap<RegisterRequestModel, User>();
+
+        CreateMap<LoginRequestModel, User>();
     }
 }

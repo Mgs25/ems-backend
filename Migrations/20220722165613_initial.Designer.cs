@@ -12,7 +12,7 @@ using ems_backend.Data;
 namespace ems_backend.Migrations
 {
     [DbContext(typeof(EMSContext))]
-    [Migration("20220721162526_initial")]
+    [Migration("20220722165613_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -60,8 +60,6 @@ namespace ems_backend.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("EnrollmentId");
-
-                    b.HasIndex("EventId");
 
                     b.HasIndex("UserId");
 
@@ -125,34 +123,42 @@ namespace ems_backend.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("City")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Designation")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("EnrollmentId")
                         .HasColumnType("int");
 
                     b.Property<string>("MailAddress")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PasswordHash")
+                    b.Property<byte[]>("PasswordHash")
                         .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("PasswordResetToken")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PasswordSalt")
+                    b.Property<byte[]>("PasswordSalt")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<DateTime>("ResetTokenExpires")
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("Role")
                         .HasColumnType("int");
 
                     b.Property<string>("Username")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VerificationToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("VerifiedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("UserId");
 
@@ -191,21 +197,11 @@ namespace ems_backend.Migrations
 
             modelBuilder.Entity("ems_backend.Entities.Enrollment", b =>
                 {
-                    b.HasOne("ems_backend.Entities.Event", "Event")
-                        .WithMany()
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ems_backend.Entities.User", "User")
+                    b.HasOne("ems_backend.Entities.User", null)
                         .WithMany("Enrollments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Event");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ems_backend.Entities.Event", b =>

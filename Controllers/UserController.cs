@@ -74,20 +74,20 @@ namespace ems_backend.Controllers
         }
 
         // POST: api/User
-        [HttpPost]
-        public ActionResult<UserResponseModel> PostUser(UserRequestModel model)
-        {
-            try
-            {
-                Dictionary<int, UserResponseModel> response = _userRepo.Create(model);
-                int userId = response.Keys.First();
-                return CreatedAtAction("GetUser", new { id = userId }, response);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
+        // [HttpPost]
+        // public ActionResult<UserResponseModel> PostUser(UserRequestModel model)
+        // {
+        //     try
+        //     {
+        //         Dictionary<int, UserResponseModel> response = _userRepo.Create(model);
+        //         int userId = response.Keys.First();
+        //         return CreatedAtAction("GetUser", new { id = userId }, response);
+        //     }
+        //     catch (Exception e)
+        //     {
+        //         return BadRequest(e.Message);
+        //     }
+        // }
 
         // DELETE: api/User/5
         [HttpDelete("{id}")]

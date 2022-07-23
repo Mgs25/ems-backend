@@ -11,7 +11,8 @@ namespace ems_backend.Models
         public string Cover { get; set; } = null!;
         public string Venue { get; set; } = null!;
         public string Organizer { get; set; } = null!;
-        public DateTime DateTime { get; set; } = new DateTime();
+        public string ContactAddress { get; set; } = null!;
+        public DateTime Date { get; set; } = new DateTime();
         public int? ParticipationLimit { get; set; }
         public int? CategoryId { get; set; } = null!;
     }

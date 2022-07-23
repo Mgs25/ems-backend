@@ -10,7 +10,7 @@ public class MailService : IMailService
     {
         _configuration = configuration;
     }
-    public void Send(string toAddress, string subject, string body)
+    public void Send(string? toAddress, string? subject, string? body)
     {
         string SmtpServer = _configuration.GetSection("MailSettings:SmtpHost").Value;
         int Port = int.Parse(_configuration.GetSection("MailSettings:Port").Value);
