@@ -19,5 +19,9 @@
 		<PackageReference Include="microsoft.visualstudio.web.codegeneration.design" Version="6.0.7"/>
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3"/>
 		<PackageReference Include="NETCore.MailKit" Version="2.1.0"/>
+		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.21.0"/>
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.21.0"/>
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.7"/>
+		<PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.3"/>
 	</ItemGroup>
 </Project>

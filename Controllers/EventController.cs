@@ -10,10 +10,12 @@ using ems_backend.Entities;
 using ems_backend.Models;
 using AutoMapper;
 using ems_backend.Repositories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ems_backend.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "admin")]
     [ApiController]
     public class EventController : ControllerBase
     {
@@ -29,7 +31,7 @@ namespace ems_backend.Controllers
         }
 
         // GET: api/Events
-        [HttpGet]
+        [HttpGet, AllowAnonymous]
         public ActionResult<IEnumerable<EventResponseModel>> GetEvents()
         {
             try
@@ -44,7 +46,7 @@ namespace ems_backend.Controllers
         }
 
         // GET: api/Events/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), AllowAnonymous]
         public ActionResult<EventResponseModel> GetEvent(int id)
         {
             try

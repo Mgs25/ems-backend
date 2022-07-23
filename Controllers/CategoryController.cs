@@ -3,17 +3,18 @@ using ems_backend.Data;
 using ems_backend.Models;
 using AutoMapper;
 using ems_backend.Repositories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ems_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "admin")]
     public class CategoryController : ControllerBase
     {
         private readonly EMSContext _context;
         private readonly IMapper _mapper;
         private readonly ICategoryRepository _categoryRepo;
-
         public CategoryController(EMSContext context, IMapper mapper, ICategoryRepository categoryRepo)
         {
             _context = context;

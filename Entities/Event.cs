@@ -12,6 +12,7 @@ namespace ems_backend.Entities
         public string? Cover { get; set; }
         public string? Venue { get; set; }
         public string? Organizer { get; set; }
+        public string? ContactAddress { get; set; }
         public DateTime Date { get; set; } = new DateTime();
         public int ParticipationLimit { get; set; }
         public int ParticipantsCount { get; set; } = 0;
