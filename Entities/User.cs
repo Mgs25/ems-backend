@@ -15,6 +15,9 @@ namespace ems_backend.Entities
         public byte[]? PasswordSalt { get; set; } = new byte[32];
         public string? VerificationToken { get; set; }
         public DateTime VerifiedAt { get; set; }
+        public string? RefreshToken { get; set; }
+        public DateTime RefreshCreated { get; set; }
+        public DateTime RefreshExpires { get; set; }
         public string? Otp { get; set; }
         public DateTime OtpExpires { get; set; }
         

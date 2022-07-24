@@ -5,6 +5,7 @@ using ems_backend.Data;
 using ems_backend.Entities;
 using ems_backend.Models;
 using ems_backend.Services;
+using ems_backend.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ems_backend.Controllers
@@ -35,7 +36,7 @@ namespace ems_backend.Controllers
             }
 
             // CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
-        
+
             _auth.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
             var user = _mapper.Map<User>(request);
@@ -99,11 +100,50 @@ namespace ems_backend.Controllers
 
             string accessToken = _auth.CreateAccessToken(user);
 
+            var refreshToken = new RefreshToken
+            {
+                Token = Convert.ToBase64String(
+                RandomNumberGenerator.GetBytes(64)),
+                Created = DateTime.Now,
+                Expires = DateTime.Now.AddDays(7)
+            };
+
+            // setRefreshToken(refreshToken);
+
+            CookieOptions cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = refreshToken.Expires
+            };
+
+            Response.Cookies.Append("refresh-token", refreshToken.Token, cookieOptions);
+
+            user.RefreshToken = Convert.ToBase64String(
+                RandomNumberGenerator.GetBytes(64));
+            user.RefreshCreated = refreshToken.Created;
+            user.RefreshExpires = refreshToken.Expires;
+
             return Ok(accessToken);
         }
 
+        private RefreshToken GenerateRefreshToken()
+        {
+            var refreshToken = new RefreshToken
+            {
+                Token = _auth.CreateRandomToken(),
+                Created = DateTime.Now,
+                Expires = DateTime.Now.AddDays(7)
+            };
+
+            return refreshToken;
+        }
+
+        private void setRefreshToken(RefreshToken token)
+        {
+        }
+
         [HttpPost("verify")]
-        public IActionResult Verify(string token) 
+        public IActionResult Verify(string token)
         {
             var user = _context.Users.FirstOrDefault(x => x.VerificationToken == token);
 
@@ -114,7 +154,7 @@ namespace ems_backend.Controllers
 
             if (user.VerifiedAt != DateTime.MinValue)
                 return BadRequest("User already verified");
-            
+
             user.VerifiedAt = DateTime.Now;
             _context.SaveChanges();
 
@@ -149,7 +189,7 @@ namespace ems_backend.Controllers
             ", user.Otp);
 
             _mailer.Send(user.MailAddress, "no-reply", messageBody);
-            
+
             _context.SaveChanges();
 
             return Ok();
