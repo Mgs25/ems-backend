@@ -99,7 +99,8 @@ namespace ems_backend.Controllers
 
             string accessToken = _auth.CreateAccessToken(user);
 
-            return Ok(accessToken);
+            return Ok(new {accessToken=accessToken});
+            // return Ok(accessToken);
         }
 
         [HttpPost("verify")]

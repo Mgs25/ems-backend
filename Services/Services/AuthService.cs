@@ -38,8 +38,8 @@ namespace ems_backend.Services
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                new Claim(ClaimTypes.Role, user.Role.ToString() ?? "user")
+                new Claim("userId", user.UserId.ToString()),
+                new Claim("Role", user.Role.ToString() ?? "user")
             };
 
             var key = new SymmetricSecurityKey(
