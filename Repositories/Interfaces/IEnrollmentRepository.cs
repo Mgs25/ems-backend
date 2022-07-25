@@ -10,5 +10,6 @@ namespace ems_backend.Repositories
         IEnumerable<Event> GetEventsByUserID(int id);
         Dictionary<int, EnrollmentResponseModel> Create(EnrollmentRequestModel model);
         void Delete(int id);
+        bool isEnrolled(int eventID, int userID);
     }
 }

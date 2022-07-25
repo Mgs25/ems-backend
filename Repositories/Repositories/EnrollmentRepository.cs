@@ -112,5 +112,15 @@ namespace ems_backend.Repositories
             _context.Enrollments.Remove(enrollment);
             _context.SaveChanges();
         }
+
+        public bool isEnrolled(int eventID, int userID)
+        {
+            var enrollment = _context.Enrollments.FirstOrDefault(x =>
+                x.EventId == eventID &&
+                x.UserId == userID
+            );
+
+            return enrollment != null;
+        }
     }
 }

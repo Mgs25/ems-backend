@@ -103,9 +103,18 @@ namespace ems_backend.Controllers
             }
         }
 
+        [HttpGet("enrollmentStatus/{eventID}/{userID}")]
+        public ActionResult<bool> EnrollmentStatus(int eventID, int userID)
+        {
+            var status = _enrollmentRepo.isEnrolled(eventID, userID);
+            return Ok(new { status = status });
+        }
+
         private bool EnrollmentExists(int id)
         {
             return (_context.Enrollments?.Any(e => e.EnrollmentId == id)).GetValueOrDefault();
         }
+
+        
     }
 }
