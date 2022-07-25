@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace ems_backend.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "admin")]
+    // [Authorize(Roles = "admin")]
     [ApiController]
     public class EventController : ControllerBase
     {
@@ -90,13 +90,26 @@ namespace ems_backend.Controllers
             }
         }
 
-        // DELETE: api/Events/5
         [HttpDelete("{id}")]
         public IActionResult DeleteEvent(int id)
         {
             try
             {
                 _eventRepo.Delete(id);
+                return Ok();
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost("increment-view/{id}")]
+        public IActionResult IncrementView(int id)
+        {
+            try
+            {
+                _eventRepo.IncrementView(id);
                 return Ok();
             }
             catch(Exception e)

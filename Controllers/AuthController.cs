@@ -123,7 +123,7 @@ namespace ems_backend.Controllers
             user.RefreshCreated = refreshToken.Created;
             user.RefreshExpires = refreshToken.Expires;
 
-            return Ok(accessToken);
+            return Ok(new { accessToken = accessToken });
         }
 
         private RefreshToken GenerateRefreshToken()

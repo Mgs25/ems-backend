@@ -19,9 +19,8 @@ builder.Services.AddCors(options =>
                       builder =>
                       {
                           builder
-                            .WithOrigins("http://localhost:3000")
-                            //.AllowAnyOrigin()
-                            .WithMethods("GET")
+                            .AllowAnyOrigin()
+                            .AllowAnyMethod()
                             .AllowAnyHeader();
                       }
     );
