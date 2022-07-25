@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace ems_backend.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "admin")]
+    // [Authorize(Roles = "admin")]
     [ApiController]
     public class EventController : ControllerBase
     {

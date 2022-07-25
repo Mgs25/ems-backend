@@ -9,5 +9,6 @@ namespace ems_backend.Repositories
         void Update(int id, EventRequestModel model);
         Dictionary<int, EventResponseModel> Create(EventRequestModel model);
         void Delete(int id);
+        
     }
 }

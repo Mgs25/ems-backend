@@ -21,12 +21,14 @@ namespace ems_backend.Controllers
         private readonly EMSContext _context;
         private readonly IMapper _mapper;
         private readonly IEnrollmentRepository _enrollmentRepo;
+        private readonly IUserRepository _userRepo;
 
-        public EnrollmentController(EMSContext context, IMapper mapper, IEnrollmentRepository enrollmentRepo)
+        public EnrollmentController(EMSContext context, IMapper mapper, IEnrollmentRepository enrollmentRepo, IUserRepository userRepo)
         {
             _context = context;
             _mapper = mapper;
             _enrollmentRepo = enrollmentRepo;
+            _userRepo = userRepo;
         }
 
         [HttpGet]
@@ -80,6 +82,20 @@ namespace ems_backend.Controllers
             {
                 _enrollmentRepo.Delete(id);
                 return Ok();
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpGet("GetEventsByUserId/{id}")]
+        public ActionResult<IEnumerable<Event>> GetEventsByUserId(int id)
+        {
+            try
+            {
+                IEnumerable<Event> events = _enrollmentRepo.GetEventsByUserID(id);
+                return Ok(events);
             }
             catch(Exception e)
             {

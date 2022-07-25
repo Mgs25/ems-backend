@@ -73,6 +73,28 @@ namespace ems_backend.Repositories
                 { enrollment.EnrollmentId, response }
             };
         }
+
+        public IEnumerable<Event> GetEventsByUserID(int id) {
+            if (_context.Users.FirstOrDefault(x => x.UserId == id) == null)
+            {
+                throw new Exception("User not found!");
+            }
+
+            List<Enrollment> userEnrollments = _context.Enrollments.Where(x => x.UserId == id).ToList();
+            List<Event> events = new List<Event>();
+
+            foreach (var enrollment in userEnrollments)
+            {
+                var eventId = enrollment.EventId;
+                var @event = _context.Events.FirstOrDefault(x => x.EventId == eventId);
+
+                if (@event != null)
+                    events.Add(@event);
+            }
+
+            return events;
+        }
+
         public void Delete(int id)
         {
             if (_context.Enrollments == null)
