@@ -52,6 +52,28 @@ namespace ems_backend.Repositories
             return mappedWish;
         }
 
+        public IEnumerable<Event> GetEventsByUserID(int id)
+        {
+            if (_context.Users.FirstOrDefault(x => x.UserId == id) == null)
+            {
+                throw new Exception("User not found!");
+            }
+
+            List<WishList> userWishList = _context.WishList.Where(x => x.UserId == id).ToList();
+            List<Event> events = new List<Event>();
+
+            foreach (var wish in userWishList)
+            {
+                var eventId = wish.EventId;
+                var @event = _context.Events.FirstOrDefault(x => x.EventId == eventId);
+
+                if (@event != null)
+                    events.Add(@event);
+            }
+
+            return events;
+        }
+
         public Dictionary<int, WishListResponseModel> Create(WishListRequestModel model)
         {
             if (_context.WishList == null)

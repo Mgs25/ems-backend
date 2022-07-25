@@ -3,6 +3,7 @@ using ems_backend.Data;
 using ems_backend.Models;
 using AutoMapper;
 using ems_backend.Repositories;
+using ems_backend.Entities;
 
 namespace ems_backend.Controllers
 {
@@ -29,11 +30,11 @@ namespace ems_backend.Controllers
                 var wishList = _wishRepo.GetAll();
                 return Ok(wishList);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
-            
+
         }
 
         [HttpGet("{id}")]
@@ -44,7 +45,7 @@ namespace ems_backend.Controllers
                 var category = _wishRepo.GetById(id);
                 return Ok(category);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
@@ -59,7 +60,7 @@ namespace ems_backend.Controllers
                 int categoryId = response.Keys.First();
                 return CreatedAtAction("GetWish", new { id = categoryId }, response[categoryId]);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
@@ -73,7 +74,21 @@ namespace ems_backend.Controllers
                 _wishRepo.Delete(id);
                 return Ok();
             }
-            catch(Exception e)
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpGet("GetEventsByUserId/{id}")]
+        public ActionResult<IEnumerable<Event>> GetEventsByUserId(int id)
+        {
+            try
+            {
+                IEnumerable<Event> events = _wishRepo.GetEventsByUserID(id);
+                return Ok(events);
+            }
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
