@@ -131,5 +131,19 @@ namespace ems_backend.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [HttpGet("get-bar-info")]
+        public ActionResult<BarResponseModel> GetBarInfo()
+        {
+            try
+            {
+                var data = _eventRepo.GetBarInfo();
+                return data;
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

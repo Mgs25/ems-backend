@@ -126,23 +126,15 @@ namespace ems_backend.Repositories
             };
         }
 
-        public void Delete(int id)
+        public void Delete(WishListRequestModel model)
         {
-            if (_context.WishList == null)
-            {
-                throw new Exception("Not found");
-            }
-
-            var wish = _context.WishList.Find(id);
-
-            if (wish == null)
-            {
-                throw new Exception("Not found");
-            }
-
             try
             {
-                _context.WishList.Remove(wish);
+                var wish = _context.WishList.FirstOrDefault(x => x.EventId == model.EventID && x.UserId == model.UserID);
+                if (wish != null)
+                    _context.WishList.Remove(wish);
+                else
+                    throw new Exception("Not found");
                 _context.SaveChanges();
             }
             catch (Exception e)
