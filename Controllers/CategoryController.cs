@@ -80,6 +80,20 @@ namespace ems_backend.Controllers
             }
         }
 
+        [HttpGet("get-count")]
+        public ActionResult<IEnumerable<EventCountResponseModel>> GetCount()
+        {
+            try
+            {
+                IEnumerable<EventCountResponseModel> result = _categoryRepo.GetCount();
+                return Ok(result);
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
         private bool CategoryExists(int id)
         {
             return (_context.Categories?.Any(e => e.CategoryId == id)).GetValueOrDefault();

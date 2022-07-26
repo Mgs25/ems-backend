@@ -9,11 +9,13 @@ namespace ems_backend.Repositories
     {
         private readonly EMSContext _context;
         private readonly IMapper _mapper;
+        private readonly IEventRepository _eventRepo;
 
-        public CategoryRepository(EMSContext context, IMapper mapper)
+        public CategoryRepository(EMSContext context, IMapper mapper, IEventRepository eventRepo)
         {
             _context = context;
             _mapper = mapper;
+            _eventRepo = eventRepo; 
         }
 
         public IEnumerable<CategoryResponseModel> GetAll()
@@ -32,7 +34,7 @@ namespace ems_backend.Repositories
 
             return categorieslist;
         }
-        public CategoryResponseModel GetById(int id)
+        public CategoryResponseModel GetById(int? id)
         {
             if (_context.Categories == null)
             {
@@ -83,6 +85,45 @@ namespace ems_backend.Repositories
                 { categoryId, response }
             };
         }
+
+        public IEnumerable<EventCountResponseModel> GetCount()
+        {
+            try
+            {
+                List<EventCountResponseModel> result = new List<EventCountResponseModel>();
+                
+                Dictionary<string, int> map = new Dictionary<string, int>();
+
+                IEnumerable<EventRequestModel> events = _eventRepo.GetAll();
+
+                foreach (var @event in events)
+                {
+                    var categoryTitle = GetById(@event.CategoryId).Title;
+                    if (map.ContainsKey(categoryTitle))
+                        map[categoryTitle]++;
+                    else
+                        map.Add(categoryTitle, 1);
+                }
+
+                foreach (KeyValuePair<string, int> pair in map)
+                {
+                    EventCountResponseModel currentCategory = new EventCountResponseModel(
+                        pair.Value,
+                        pair.Key
+                    );
+                    
+                    result.Add(currentCategory);
+                }
+
+                return result;
+                //// { value: 2, name: 'Conference' }
+            }
+            catch(Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
         public void Delete(int id)
         {
             if (_context.Categories == null)
@@ -106,6 +147,11 @@ namespace ems_backend.Repositories
             {
                 throw new Exception(e.Message);
             }
+        }
+
+        public CategoryResponseModel GetById(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }
