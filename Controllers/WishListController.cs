@@ -94,6 +94,20 @@ namespace ems_backend.Controllers
             }
         }
 
+        [HttpPost("EventExists")]
+        public ActionResult<object> EventExists(WishListRequestModel model)
+        {
+            try
+            {
+                bool result = _wishRepo.EventExists(model);
+                return Ok(new { status = result });
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
         private bool WishExists(int id)
         {
             return (_context.WishList?.Any(e => e.WishListId == id)).GetValueOrDefault();

@@ -9,6 +9,7 @@ namespace ems_backend.Repositories
         WishListResponseModel GetById(int id);
         Dictionary<int, WishListResponseModel> Create(WishListRequestModel model);
         IEnumerable<Event> GetEventsByUserID(int id);
+        bool EventExists(WishListRequestModel model);
         void Delete(int id);
     }
 }
