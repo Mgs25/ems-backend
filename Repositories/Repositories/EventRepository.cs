@@ -129,6 +129,23 @@ namespace ems_backend.Repositories
 
         }
 
+        public void IncrementResult(int id) {
+            var @event = _context.Events.FirstOrDefault(x => x.EventId == id);
+
+            if (@event == null)
+                throw new Exception("Not found!");
+
+            try {
+                @event.ParticipantsCount++;
+                _context.Events.Update(@event);
+                _context.SaveChanges();
+            }
+            catch(Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
         public void Delete(int id)
         {
             if (_context.Events == null)

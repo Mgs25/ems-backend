@@ -117,5 +117,19 @@ namespace ems_backend.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [HttpPost("increment-register/{id}")]
+        public IActionResult IncrementResult(int id)
+        {
+            try
+            {
+                _eventRepo.IncrementResult(id);
+                return Ok();
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }
