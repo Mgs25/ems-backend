@@ -115,32 +115,34 @@ namespace ems_backend.Repositories
 
             if (@event == null)
                 throw new Exception("Not found!");
-            
+
             try
             {
                 @event.ViewCount++;
                 _context.Events.Update(@event);
                 _context.SaveChanges();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
 
         }
 
-        public void IncrementResult(int id) {
+        public void IncrementResult(int id)
+        {
             var @event = _context.Events.FirstOrDefault(x => x.EventId == id);
 
             if (@event == null)
                 throw new Exception("Not found!");
 
-            try {
+            try
+            {
                 @event.ParticipantsCount++;
                 _context.Events.Update(@event);
                 _context.SaveChanges();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
