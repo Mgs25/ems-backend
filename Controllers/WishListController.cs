@@ -66,12 +66,12 @@ namespace ems_backend.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult DeleteWish(int id)
+        [HttpDelete]
+        public IActionResult DeleteWish(WishListRequestModel model)
         {
             try
             {
-                _wishRepo.Delete(id);
+                _wishRepo.Delete(model);
                 return Ok();
             }
             catch (Exception e)

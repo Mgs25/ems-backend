@@ -13,7 +13,7 @@ namespace ems_backend.Models
         public string Organizer { get; set; } = null!;
         public string ContactAddress { get; set; } = null!;
         public DateTime Date { get; set; } = new DateTime();
-        public int? ParticipationLimit { get; set; }
-        public int? CategoryId { get; set; } = null!;
+        public int ParticipationLimit { get; set; }
+        public int CategoryId { get; set; }
     }
 }

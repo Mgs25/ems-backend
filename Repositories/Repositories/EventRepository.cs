@@ -148,6 +148,31 @@ namespace ems_backend.Repositories
             }
         }
 
+        public BarResponseModel GetBarInfo()
+        {
+            try
+            {
+                BarResponseModel brm = new BarResponseModel();
+                
+                brm.EventList = new List<string>();
+                brm.ParticipantsCount = new List<int>();
+                brm.ParticipantsLimit = new List<int>();
+
+                foreach (var @event in GetAll())
+                {
+                    brm.EventList.Add(@event.Title);
+                    brm.ParticipantsCount.Add(@event.ParticipantsCount);
+                    brm.ParticipantsLimit.Add(@event.ParticipationLimit);
+                }
+
+                return brm;
+            }
+            catch(Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
         public void Delete(int id)
         {
             if (_context.Events == null)

@@ -8,6 +8,7 @@ namespace ems_backend.Repositories
         EventResponseModel GetById(int id);
         void Update(int id, EventRequestModel model);
         Dictionary<int, EventResponseModel> Create(EventRequestModel model);
+        BarResponseModel GetBarInfo();
         void IncrementView(int id);
         void IncrementResult(int id);
         void Delete(int id);
