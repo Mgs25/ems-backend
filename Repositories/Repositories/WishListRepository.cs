@@ -74,6 +74,23 @@ namespace ems_backend.Repositories
             return events;
         }
 
+        public bool EventExists(WishListRequestModel model)
+        {
+            bool exists;
+            try
+            {
+                exists = _context.WishList.FirstOrDefault(x => 
+                    x.EventId == model.EventID &&
+                    x.UserId == model.UserID
+                ) != null ? true : false;
+                return exists;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
         public Dictionary<int, WishListResponseModel> Create(WishListRequestModel model)
         {
             if (_context.WishList == null)
