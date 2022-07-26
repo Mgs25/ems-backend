@@ -7,6 +7,7 @@ namespace ems_backend.Repositories
         IEnumerable<CategoryResponseModel> GetAll();
         CategoryResponseModel GetById(int id);
         Dictionary<int, CategoryResponseModel> Create(CategoryRequestModel model);
+        IEnumerable<EventCountResponseModel> GetCount();
         void Delete(int id);
     }
 }
