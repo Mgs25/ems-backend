@@ -148,10 +148,5 @@ namespace ems_backend.Repositories
                 throw new Exception(e.Message);
             }
         }
-
-        public CategoryResponseModel GetById(int id)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
