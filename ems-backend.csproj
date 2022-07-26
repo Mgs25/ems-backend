@@ -23,5 +23,7 @@
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.21.0"/>
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.7"/>
 		<PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.3"/>
+		<PackageReference Include="Azure.Storage.Blobs" Version="12.13.0"/>
+		<PackageReference Include="MimeMapping" Version="1.0.1.37"/>
 	</ItemGroup>
 </Project>

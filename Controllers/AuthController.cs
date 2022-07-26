@@ -7,6 +7,8 @@ using ems_backend.Models;
 using ems_backend.Services;
 using ems_backend.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace ems_backend.Controllers
 {
@@ -100,24 +102,75 @@ namespace ems_backend.Controllers
 
             string accessToken = _auth.CreateAccessToken(user);
 
-            return Ok(new {accessToken=accessToken});
-            // return Ok(accessToken);
-        }
-
-        private RefreshToken GenerateRefreshToken()
-        {
             var refreshToken = new RefreshToken
             {
-                Token = _auth.CreateRandomToken(),
+                Token = Convert.ToBase64String(
+                RandomNumberGenerator.GetBytes(64)),
                 Created = DateTime.Now,
                 Expires = DateTime.Now.AddDays(7)
             };
 
-            return refreshToken;
+            setRefreshToken(user, refreshToken);
+            CookieOptions cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = refreshToken.Expires
+            };
+
+            Response.Cookies.Append("refresh-token", refreshToken.Token, cookieOptions);
+
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+
+            return Ok(new { accessToken = accessToken });
         }
 
-        private void setRefreshToken(RefreshToken token)
+        [HttpPost("refresh-token"), Authorize()]
+        public ActionResult<string> RefreshToken()
         {
+            var refreshToken = Request.Cookies["refresh-token"];
+            User currentUser;
+
+            Console.WriteLine(GetUser());
+
+            try
+            {
+                currentUser = _context.Users.First(x => x.Username == GetUser());
+            }
+            catch (Exception e)
+            {
+                return Unauthorized(e.Message);
+            }
+
+            if (currentUser.RefreshToken != refreshToken)
+            {
+                return Unauthorized("Invalid refresh token");
+            }
+            else if (currentUser.RefreshExpires < DateTime.Now)
+            {
+                return Unauthorized("Refresh token expired");
+            }
+
+            string token = _auth.CreateAccessToken(currentUser);
+            var newRefreshToken = GenerateRefreshToken();
+
+            setRefreshToken(currentUser, newRefreshToken);
+
+            CookieOptions cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = newRefreshToken.Expires
+            };
+
+            Response.Cookies.Append("refresh-token", newRefreshToken.Token, cookieOptions);
+
+            return Ok(token);
         }
 
         [HttpPost("verify")]
@@ -196,6 +249,46 @@ namespace ems_backend.Controllers
             _context.SaveChanges();
 
             return Ok("Password reset succesfully");
+        }
+
+        private RefreshToken GenerateRefreshToken()
+        {
+            var refreshToken = new RefreshToken
+            {
+                Token = _auth.CreateRandomToken(),
+                Created = DateTime.Now,
+                Expires = DateTime.Now.AddDays(7)
+            };
+
+
+            return refreshToken;
+        }
+
+        private void setRefreshToken(User user, RefreshToken refreshToken)
+        {
+            user.RefreshToken = refreshToken.Token;
+            user.RefreshCreated = refreshToken.Created;
+            user.RefreshExpires = refreshToken.Expires;
+        }
+
+        private string GetUser()
+        {
+            string token;
+            try
+            {
+                token = Request.Headers["Authorization"].First().Split(' ').Last();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+
+            var handler = new JwtSecurityTokenHandler();
+            var jwtSecurityToken = handler.ReadJwtToken(token);
+
+            var userId = jwtSecurityToken.Claims.First(x => x.Type.Split('/').Last() == "nameidentifier").Value;
+
+            return _context.Users.First(x => x.UserId == Convert.ToInt32(userId)).Username ?? "";
         }
     }
 }

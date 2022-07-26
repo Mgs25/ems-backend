@@ -79,6 +79,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IWishListRepository, WishListRepository>();
+builder.Services.AddScoped<IBlobService, BlobService>();
 
 
 var app = builder.Build();
